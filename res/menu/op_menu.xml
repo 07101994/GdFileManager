@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:id="@+id/op_delete"
+        android:icon="@drawable/ic_menu_delete"
+        android:title="@string/op_delete"
+        android:showAsAction="always"/>
+    <item android:id="@+id/op_copy"
+        android:icon="@drawable/ic_menu_copy"
+        android:title="@string/op_copy"
+        android:showAsAction="always"/>
+    <item android:id="@+id/op_move"
+        android:icon="@drawable/ic_menu_cut"
+        android:title="@string/op_move"
+        android:showAsAction="always"/>
+    <item android:id="@+id/op_send"
+        android:icon="@drawable/ic_menu_share"
+        android:title="@string/op_send"
+        android:showAsAction="always"/>
+    <item android:id="@+id/op_select_all"
+        android:icon="@drawable/ic_menu_select_all"
+        android:title="@string/op_select_all"
+        android:showAsAction="always"/>
+    <item android:id="@+id/op_cancel"
+        android:icon="@drawable/ic_menu_cancel"
+        android:title="@string/op_cancel"
+        android:showAsAction="always"/>
+</menu>

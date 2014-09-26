@@ -1,0 +1,17 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.godin.filemanager.MainActivity" >
+
+    <item
+        android:id="@+id/action_settings"
+        android:icon="@android:drawable/ic_menu_preferences"
+        android:orderInCategory="100"
+        android:showAsAction="always"
+        android:title="@string/settings"/>
+    <item android:id="@+id/mode2"
+        android:icon="@android:drawable/ic_menu_add"
+        android:orderInCategory="101"
+        android:showAsAction="always"
+        android:title="@string/add"/>
+
+</menu>
