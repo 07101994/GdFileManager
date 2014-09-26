@@ -33,6 +33,6 @@
             android:text="@string/operation_paste"/>
         <Button android:id="@+id/button_cancel"
             style="@style/BottomButton.Right"
-            android:text="@string/operation_cancel"/>
+            android:text="@string/cancel"/>
     </LinearLayout>
 </LinearLayout>

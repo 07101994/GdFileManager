@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.view.ActionMode;
 import android.view.Menu;
@@ -129,18 +131,26 @@ public class FileListAdapter extends ArrayAdapter<FileInfo> {
 		}.execute();
 	}
 	void opDelete() {
-		// show dialog?
-		final List<FileInfo> sel = mSelectedItem;
-		asyncExec(new Runnable(){
-			@Override
-			public void run(){
-				for(FileInfo fi : sel){
-					Utils.DeleteFile(new File(fi.path));
-					mAllItems.remove(fi);
-				}
-			}
-		}, true);
-		//dismiss dialog
+		AlertDialog dialog = new AlertDialog.Builder(mContext)
+         .setMessage(mContext.getString(R.string.delete_notice))
+         .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
+             public void onClick(DialogInterface dialog, int whichButton) {
+         		// show process dialog?
+            	
+            	final List<FileInfo> sel = mSelectedItem;
+         		asyncExec(new Runnable(){
+         			@Override
+         			public void run(){
+         				for(FileInfo fi : sel){
+         					Utils.DeleteFile(new File(fi.path));
+         					mAllItems.remove(fi);
+         				}
+         			}
+         		}, true);
+         		//dismiss dialog
+             }
+         }).setNegativeButton(R.string.cancel, null).create();
+		dialog.show();
 	}
 
 	void opCopy() {
@@ -176,6 +186,7 @@ public class FileListAdapter extends ArrayAdapter<FileInfo> {
 			switch(id){
 			case R.id.op_delete:
 				opDelete();
+				mode.finish();
 				break;
 			case R.id.op_copy:
 				opCopy();
