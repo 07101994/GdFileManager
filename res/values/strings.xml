@@ -19,11 +19,16 @@
     <string name="multi_select_title">已选中 %1$s 个项目</string>
     
     <string name="operation_paste">粘贴</string>
+    <string name="move_to_here">剪切到此</string>
+    <string name="copy_to_here">复制到此</string>
     <string name="confirm">确认</string>
     <string name="cancel">取消</string>
     
     <!-- 提示语 -->
     <string name="delete_notice">确认删除选中的文件?</string>
+    <string name="deleting">正在删除..</string>
+    <string name="copying">正在复制..</string>
+    <string name="moving">正在移动..</string>
     <string name="file_not_exist">文件 %1$s 不存在</string>
     <string name="not_access">无法访问 %1$s</string>
     <string name="is_not_folder"> %1$s 不是文件夹</string>

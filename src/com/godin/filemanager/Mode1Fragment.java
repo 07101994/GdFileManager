@@ -14,7 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,12 +33,24 @@ public class Mode1Fragment extends Fragment implements IFragmentCallback, OnItem
 
 	TextView mHeaderText;
 	ListView mFileListView;
-	ArrayAdapter<FileInfo> mAdapter;
+	LinearLayout mBar;
+	Button mBarConfirm, mBarCancel;
+	FileListAdapter mAdapter;
 	FileSortHelper mSort;
 	FileIconHelper mFileIconHelper;
 	public Mode1Fragment() {
 	}
 
+	private View.OnClickListener l = new View.OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			if(v.getId() == R.id.button_cancel){
+				FileOperation.getInstance().cancel();
+			}else if(v.getId() == R.id.button_confirm){
+				FileOperation.getInstance().confirm(mCurrentPath);
+			}
+		}
+	};
 	@Override
 	public void onAttach(Activity act) {
 		super.onAttach(act);
@@ -56,8 +69,14 @@ public class Mode1Fragment extends Fragment implements IFragmentCallback, OnItem
 		mHeaderText = (TextView)rootView.findViewById(R.id.current_path_view);
 		mHeaderText.setVisibility(View.GONE);
 		mFileListView = (ListView)rootView.findViewById(R.id.file_path_list);
+		mBar = (LinearLayout)rootView.findViewById(R.id.opeartion_bar);
+		mBarConfirm = (Button)mBar.findViewById(R.id.button_confirm);
+		mBarCancel = (Button)mBar.findViewById(R.id.button_cancel);
+		mBarCancel.setOnClickListener(l);
+		mBarConfirm.setOnClickListener(l);
 		mFileIconHelper = new FileIconHelper(mActivity);
 		mAdapter = new FileListAdapter(mActivity, R.layout.file_browser_item, mFileNameList, mFileIconHelper,this);
+		FileOperation.getInstance(this, mAdapter, mActivity);
 		mFileListView.setAdapter(mAdapter);
 		mFileListView.setOnItemClickListener(this);
 //		mFileListView.setOnItemLongClickListener(this);
@@ -70,8 +89,14 @@ public class Mode1Fragment extends Fragment implements IFragmentCallback, OnItem
 	
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
-		final FileInfo fi = (FileInfo)view.getTag(), fi2 = mFileNameList.get(pos);//always true
-		Utils.i("onItemClick  tag == get(position) ? " + (fi == fi2));
+		final FileInfo fi = (FileInfo)view.getTag();//, fi2 = mFileNameList.get(pos);
+//		Utils.i("onItemClick  tag == get(position) ? " + (fi == fi2));//always true
+		
+		if (mAdapter.isInSelection()) {
+			mAdapter.switchCheckbox(view);
+			return;
+		}
+		
 		if(fi.isDir)
 			refreshUI(fi.path, mSort);
 		else
@@ -134,8 +159,13 @@ public class Mode1Fragment extends Fragment implements IFragmentCallback, OnItem
 		});
 	}
 
+	public String getCurrentPath(){
+		return mCurrentPath;
+	}
 	@Override
 	public boolean handleBack() {
+		if(FileOperation.getInstance().doBackKey())
+			return true;
 		int index = mCurrentPath.lastIndexOf(File.separatorChar);
 		if(Utils.SDCARD_PATH.equals(mCurrentPath) || index < 1)
 			return false;
@@ -147,5 +177,13 @@ public class Mode1Fragment extends Fragment implements IFragmentCallback, OnItem
 	@Override
 	public void onListChanged(){
 		onDataChanged();
+	}
+	@Override
+	public void refreshList(){
+		refreshUI(mCurrentPath, mSort);
+	}
+	@Override
+	public LinearLayout getOperationBar(){
+		return mBar;
 	}
 }

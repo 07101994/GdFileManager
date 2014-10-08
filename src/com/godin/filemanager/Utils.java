@@ -1,7 +1,11 @@
 package com.godin.filemanager;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.HashSet;
 
 import android.annotation.SuppressLint;
@@ -167,16 +171,112 @@ public class Utils {
 		}
 	}
 	
+	public static String makePath(String p1, String p2){
+		if(p1.endsWith(File.separator))
+			return p1 + p2;
+		return p1 + File.separator + p2;
+	}
+	
 	public static void DeleteFile(File file){
 		if(file == null)
 			return;
+		i("DeleteFile() path = " + file.getPath());
 		if(file.isDirectory()){
 			for(File child : file.listFiles())
 				DeleteFile(child);
 		}
 		file.delete();
 	}
-	
+	public static void CopyFile(FileInfo fi, String des){
+		if(fi == null || TextUtils.isEmpty(des)){
+			Utils.e("CopyFile arg error, fi=" + fi +", des="+des);
+			return;
+		}
+		File file = new File(fi.path);
+		if(fi.isDir){
+			File desFile = new File(des, fi.name);
+			String desPath = desFile.getPath();
+			int i = 1;
+			while (desFile.exists()){
+				desFile = new File(des, fi.name +"_"+i++);
+				desPath = desFile.getPath();
+			}
+			for(File child : file.listFiles()){
+				if( !child.isHidden() )
+					CopyFile(getFileInfo(child.getPath(),FileCategoryHelper.getInstance(null).getFilter()), desPath);
+			}
+		}else{
+			copyFile(fi, des);
+		}
+		i("Utils] CopyFile : " + fi.path +" >> "+des);
+	}
+	public static boolean MoveFile(FileInfo fi, String des){
+		i("Utils] MoveFile : " + fi.path +" >> "+des);
+		if(fi == null || TextUtils.isEmpty(des)){
+			Utils.e("MoveFile arg error, fi=" + fi +", des="+des);
+			return false;
+		}
+		File file = new File(fi.path);
+		String newPath = makePath(des, fi.name);
+		try{
+			return file.renameTo(new File(newPath));
+		}catch(SecurityException e){
+			e("movefile error . "+e.toString());
+		}
+		return false;
+	}
+	  // return new file path if successful, or return null
+    public static String copyFile(FileInfo f, String dest) {
+        File file = new File(f.path);
+        if (!file.exists() || file.isDirectory()) {
+            i("copyFile: file not exist or is directory, " + f.path);
+            return null;
+        }
+        FileInputStream fi = null;
+        FileOutputStream fo = null;
+        try {
+            fi = new FileInputStream(file);
+            File destPlace = new File(dest);
+            if (!destPlace.exists()) {
+                if (!destPlace.mkdirs())
+                    return null;
+            }
+
+            String destPath = makePath(dest, file.getName());
+            File destFile = new File(destPath);
+            int i = 1;
+            while (destFile.exists()) {
+                destFile = new File(dest, f.name +"_"+i++);
+                destPath = destFile.getPath();
+            }
+
+            if (!destFile.createNewFile())
+                return null;
+
+            fo = new FileOutputStream(destFile);
+            int count = 102400;
+            byte[] buffer = new byte[count];
+            int read = 0;
+            while ((read = fi.read(buffer, 0, count)) != -1) {
+                fo.write(buffer, 0, read);
+            }
+            return destPath;
+        } catch (FileNotFoundException e) {
+            e("copyFile: file not found, " + f.path);
+        } catch (IOException e) {
+            e("copyFile: " + e.toString());
+        } finally {
+            try {
+                if (fi != null)
+                    fi.close();
+                if (fo != null)
+                    fo.close();
+            } catch (IOException e) {
+                e(""+e);
+            }
+        }
+        return null;
+    }
 	public static void i(String s){
 		Log.i("godinFM", ""+s);
 	}

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.LinearLayout;
 
 public class MainActivity extends Activity {
 
@@ -60,5 +61,7 @@ public class MainActivity extends Activity {
 	interface IFragmentCallback{
 		boolean handleBack();
 		void onListChanged();
+		void refreshList();
+		LinearLayout getOperationBar();
 	}
 }

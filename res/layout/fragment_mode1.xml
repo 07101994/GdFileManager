@@ -24,7 +24,7 @@
             android:fastScrollEnabled="true" />
     </FrameLayout>
     
-    <LinearLayout android:id="@+id/moving_opeartion_bar"
+    <LinearLayout android:id="@+id/opeartion_bar"
         android:visibility="gone"
         android:orientation="horizontal"
         style="@style/BottomButtonBar">

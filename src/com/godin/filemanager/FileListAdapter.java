@@ -1,14 +1,10 @@
 package com.godin.filemanager;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.os.AsyncTask;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,7 +23,6 @@ public class FileListAdapter extends ArrayAdapter<FileInfo> {
 	private final IFragmentCallback mCallback;
 	private final List<FileInfo> mAllItems ;
 	private final ArrayList<FileInfo> mSelectedItem= new ArrayList<FileInfo>();
-	
 	
 	public FileListAdapter(Context c, int resId, List<FileInfo> fileinfos,
 			FileIconHelper iconHelper, IFragmentCallback callback) {
@@ -79,31 +74,36 @@ public class FileListAdapter extends ArrayAdapter<FileInfo> {
 			mCallback.onListChanged();
 		}
 	}
+	boolean isInSelection(){
+		return mSelectedItem.size() > 0;
+	}
 	private View.OnClickListener mCheckboxOnClick = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			ImageView img = (ImageView) v.findViewById(R.id.file_checkbox);
-			FileInfo tag = getItem((int) img.getTag());
-			tag.selected = !tag.selected;
-			if(tag.selected)
-				mSelectedItem.add(tag);
-			else
-				mSelectedItem.remove(tag);
-			ActionMode am = ((MainActivity)mContext).getActionMode();
-			if(am == null){
-				am = ((MainActivity)mContext).startActionMode(new OpModeCallback());
-				((MainActivity)mContext).setActionMode(am);
-			}
-			am.invalidate();
-			updateActionModeTitle(am);
-			
-			img.setImageResource(tag.selected ? R.drawable.btn_check_on_holo_light
-					: R.drawable.btn_check_off_holo_light);
-			Utils.i((tag.selected ? "selected : " : "cancel selected : ") + tag.name);
-			
-			
+			switchCheckbox(v);
 		}
 	};
+	
+	void switchCheckbox(View v){
+		ImageView img = (ImageView) v.findViewById(R.id.file_checkbox);
+		FileInfo tag = getItem((int) img.getTag());
+		tag.selected = !tag.selected;
+		if(tag.selected)
+			mSelectedItem.add(tag);
+		else
+			mSelectedItem.remove(tag);
+		ActionMode am = ((MainActivity)mContext).getActionMode();
+		if(am == null){
+			am = ((MainActivity)mContext).startActionMode(new OpModeCallback());
+			((MainActivity)mContext).setActionMode(am);
+		}
+		am.invalidate();
+		updateActionModeTitle(am);
+		
+		img.setImageResource(tag.selected ? R.drawable.btn_check_on_holo_light
+				: R.drawable.btn_check_off_holo_light);
+		Utils.i((tag.selected ? "selected : " : "cancel selected : ") + tag.name);
+	}
 	
 	void updateActionModeTitle(ActionMode am){
 		int selectCount = mSelectedItem.size();
@@ -113,55 +113,9 @@ public class FileListAdapter extends ArrayAdapter<FileInfo> {
 		else
 			am.finish();
 	}
+
 	
-	private void asyncExec(final Runnable r, final boolean update){
-		new AsyncTask<Void ,Void, Void>(){
-			@Override
-			protected Void doInBackground(Void... v){
-				r.run();
-				return null;
-			}
-			@Override
-			protected void onPostExecute(Void u){
-				if(update){
-					mCallback.onListChanged();
-					clearSelection();
-				}
-			}
-		}.execute();
-	}
-	void opDelete() {
-		AlertDialog dialog = new AlertDialog.Builder(mContext)
-         .setMessage(mContext.getString(R.string.delete_notice))
-         .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
-             public void onClick(DialogInterface dialog, int whichButton) {
-         		// show process dialog?
-            	
-            	final List<FileInfo> sel = mSelectedItem;
-         		asyncExec(new Runnable(){
-         			@Override
-         			public void run(){
-         				for(FileInfo fi : sel){
-         					Utils.DeleteFile(new File(fi.path));
-         					mAllItems.remove(fi);
-         				}
-         			}
-         		}, true);
-         		//dismiss dialog
-             }
-         }).setNegativeButton(R.string.cancel, null).create();
-		dialog.show();
-	}
-
-	void opCopy() {
-	}
-
-	void opMove() {
-	}
-
-	void opSend() {
-	}
-
+	
 	public class OpModeCallback implements ActionMode.Callback{
 		private Menu mmMenu;
 
@@ -185,17 +139,17 @@ public class FileListAdapter extends ArrayAdapter<FileInfo> {
 			int id = mi.getItemId();
 			switch(id){
 			case R.id.op_delete:
-				opDelete();
+				FileOperation.getInstance().opDelete(mSelectedItem, mAllItems);
 				mode.finish();
 				break;
 			case R.id.op_copy:
-				opCopy();
+				FileOperation.getInstance().opCopy(mSelectedItem);
 				break;
 			case R.id.op_move:
-				opMove();
+				FileOperation.getInstance().opMove(mSelectedItem);
 				break;
 			case R.id.op_send:
-				opSend();
+				FileOperation.getInstance().opSend(mSelectedItem);
 				break;
 			case R.id.op_cancel:
 				mode.finish();
@@ -220,7 +174,6 @@ public class FileListAdapter extends ArrayAdapter<FileInfo> {
 
 		@Override
 		public void onDestroyActionMode(ActionMode a) {
-			Utils.i("OpMode  finished , destory!");
 			clearSelection();
 			((MainActivity)mContext).setActionMode(null);
 		}		
