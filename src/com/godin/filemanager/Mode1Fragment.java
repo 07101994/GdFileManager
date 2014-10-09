@@ -9,10 +9,16 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -58,12 +64,14 @@ public class Mode1Fragment extends Fragment implements IFragmentCallback, OnItem
 		mSharedPreference = act.getPreferences(0);
 		mFileCategoryHelper = FileCategoryHelper.getInstance(act);
 		mCurrentPath = mSharedPreference.getString(KEY_PATH, Utils.SDCARD_PATH);
+		mFileIconHelper = new FileIconHelper(act);
+		mSort = FileSortHelper.getInstance();
 		Utils.i("[Fragment.onAttach()] mCurrentPath = " + mCurrentPath);
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
+			Bundle b) {
 		View rootView = inflater.inflate(R.layout.fragment_mode1, container,
 				false);
 		mHeaderText = (TextView)rootView.findViewById(R.id.current_path_view);
@@ -74,17 +82,21 @@ public class Mode1Fragment extends Fragment implements IFragmentCallback, OnItem
 		mBarCancel = (Button)mBar.findViewById(R.id.button_cancel);
 		mBarCancel.setOnClickListener(l);
 		mBarConfirm.setOnClickListener(l);
-		mFileIconHelper = new FileIconHelper(mActivity);
 		mAdapter = new FileListAdapter(mActivity, R.layout.file_browser_item, mFileNameList, mFileIconHelper,this);
-		FileOperation.getInstance(this, mAdapter, mActivity);
+		FileOperation.init(this, mAdapter, mActivity);
 		mFileListView.setAdapter(mAdapter);
 		mFileListView.setOnItemClickListener(this);
-//		mFileListView.setOnItemLongClickListener(this);
-//		mFileListView.setOnCreateContextMenuListener(this);
 		mActivity.registerForContextMenu(mFileListView);
-		mSort = FileSortHelper.getInstance();
+		
 		refreshUI(mCurrentPath, mSort);
+		setHasOptionsMenu(true);
 		return rootView;
+	}
+	
+	@Override
+	public void onDestroyView(){
+		super.onDestroyView();
+		FileOperation.unInit();
 	}
 	
 	@Override
@@ -103,20 +115,24 @@ public class Mode1Fragment extends Fragment implements IFragmentCallback, OnItem
 			Utils.openFile(mActivity, fi.path);
 	}
 
-/*	@Override
-	public boolean onItemLongClick(AdapterView<?> parent, View v, int pos, long id) {
-		Utils.i("onItemLongClick pos = " + pos);
-		Toast.makeText(mActivity, "long click . pos="+pos, Toast.LENGTH_SHORT).show();
-		return true;
-	}
 	@Override
-	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo){
-		 Utils.i(" onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo)");
-		 Toast.makeText(mActivity, "onCreateContextMenu() "+v.getTag(), Toast.LENGTH_SHORT).show(); 
-	}*/
-	private void refreshUI(String path, FileSortHelper sort){
+	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo cmi) {
+		int index = (int) ((AdapterContextMenuInfo) cmi).id; // 选择的item的索引
+		if (index == 0 && !mCurrentPath.equals(Utils.SDCARD_PATH)) // 若是 父级目录 则不显示context menu
+			return;
+		mActivity.getMenuInflater().inflate(R.menu.op_menu, menu);
+		menu.findItem(R.id.op_cancel).setVisible(false);
+		menu.findItem(R.id.op_select_all).setVisible(false);
+	}
+
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		AdapterContextMenuInfo acmi = (AdapterContextMenuInfo) item.getMenuInfo();
+		return mAdapter.handleOpItem(item, (int) acmi.id);
+	}
+
+	private void refreshUI(String path, FileSortHelper sort) {
 		Utils.i("refreshUI  path = "+ path);
-//		mHeaderText.setText(path + "");
 		mActivity.setTitle(path+"");
 		File file = new File(path);
 		if(!file.exists()){
@@ -144,10 +160,12 @@ public class Mode1Fragment extends Fragment implements IFragmentCallback, OnItem
 			}
 		}
 		sortCurrentList(sort);
-		//showEmptyView(list.size()==0)
 	}
 	public void sortCurrentList(FileSortHelper sort){
 		Collections.sort(mFileNameList, sort.getComparator());
+		if (!mCurrentPath.equals(Utils.SDCARD_PATH)) {
+			mFileNameList.add(0, Utils.getUpFileInfo(mCurrentPath));
+		}
 		onDataChanged();
 	}
 	public void onDataChanged(){
@@ -162,6 +180,20 @@ public class Mode1Fragment extends Fragment implements IFragmentCallback, OnItem
 	public String getCurrentPath(){
 		return mCurrentPath;
 	}
+	
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		 inflater.inflate(R.menu.main, menu);
+	}
+	 public boolean onOptionsItemSelected(MenuItem item) {
+		 switch(item.getItemId()){
+		 case R.id.refresh:
+			 refreshList();
+			 break;
+		 }
+	     return true;
+	 }
+
 	@Override
 	public boolean handleBack() {
 		if(FileOperation.getInstance().doBackKey())

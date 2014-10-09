@@ -7,6 +7,7 @@
     <!--  菜单 menu -->
     <string name="settings">设置</string>
     <string name="add">添加?</string>
+    <string name="refresh">刷新</string>
     
     
     <!-- 选择模式 操作  -->
@@ -16,6 +17,7 @@
     <string name="op_send">发送</string>
     <string name="op_select_all">全选</string>
     <string name="op_cancel">取消</string>
+    <string name="op_detail">详情</string>
     <string name="multi_select_title">已选中 %1$s 个项目</string>
     
     <string name="operation_paste">粘贴</string>
@@ -23,6 +25,17 @@
     <string name="copy_to_here">复制到此</string>
     <string name="confirm">确认</string>
     <string name="cancel">取消</string>
+    
+    <!-- 详情 对话框 -->
+    <string name="file_info_location">位置:</string>
+    <string name="file_info_size">大小:</string>
+    <string name="file_info_modified">时间:</string>
+    <string name="file_info_canread">可读:</string>
+    <string name="file_info_canwrite">可写:</string>
+    <string name="file_info_ishidden">隐藏:</string>
+    <string name="file_size">%d 字节</string>
+    <string name="yes">是</string>
+    <string name="no">否</string>
     
     <!-- 提示语 -->
     <string name="delete_notice">确认删除选中的文件?</string>

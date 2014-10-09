@@ -1,6 +1,7 @@
 package com.godin.filemanager;
 
 import java.util.HashMap;
+import java.util.Locale;
 
 import android.content.Context;
 import android.view.View;
@@ -10,7 +11,7 @@ import com.godin.filemanager.FileCategoryHelper.FileCategory;
 import com.godin.filemanager.FileIconLoader.IconLoadFinishListener;
 
 public class FileIconHelper implements IconLoadFinishListener{
-	private static final String LOG_TAG = "FileIconHelper";
+//	private static final String LOG_TAG = "FileIconHelper";
 
     private static HashMap<ImageView, ImageView> imageFrames = new HashMap<ImageView, ImageView>();
 
@@ -48,13 +49,13 @@ public class FileIconHelper implements IconLoadFinishListener{
     private static void addItem(String[] exts, int resId) {
         if (exts != null) {
             for (String ext : exts) {
-                fileExtToIcons.put(ext.toLowerCase(), resId);
+                fileExtToIcons.put(ext.toLowerCase(Locale.ENGLISH), resId);
             }
         }
     }
 
     public static int getFileIcon(String ext) {
-        Integer i = fileExtToIcons.get(ext.toLowerCase());
+        Integer i = fileExtToIcons.get(ext.toLowerCase(Locale.ENGLISH));
         if (i != null) {
             return i.intValue();
         } else {

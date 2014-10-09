@@ -3,8 +3,10 @@ package com.godin.filemanager;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.ActionMode;
-import android.view.Menu;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.LinearLayout;
 
 public class MainActivity extends Activity {
@@ -40,23 +42,16 @@ public class MainActivity extends Activity {
 	}
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			ContextMenuInfo menuInfo) {
+		getFragmentManager().findFragmentByTag(FragmentTag1).onCreateContextMenu(menu, v, menuInfo);
+//		super.onCreateContextMenu(menu, v, menuInfo);
+	}
+	@Override
+	public boolean onContextItemSelected(MenuItem item){
+		return getFragmentManager().findFragmentByTag(FragmentTag1).onContextItemSelected(item);
 	}
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
-	}
 
 	interface IFragmentCallback{
 		boolean handleBack();

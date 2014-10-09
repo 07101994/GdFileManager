@@ -20,10 +20,13 @@ public class FileOperation{
 	final Context mContext;
 	private static FileOperation ins;
 	private boolean mMoving, mCopying;
-	public static FileOperation getInstance(Mode1Fragment f, FileListAdapter fla,Context c){
+	public static FileOperation init(Mode1Fragment f, FileListAdapter fla,Context c){
 		if(ins == null)
 			ins = new FileOperation(f, fla, c);
 		return ins;
+	}
+	public static void unInit(){
+		ins = null;
 	}
 	public static FileOperation getInstance(){
 		return ins;
@@ -74,7 +77,7 @@ public class FileOperation{
 				}
 				
 				if(update){
-					mFragment.onListChanged();
+					mFragment.refreshList();
 				}
 			}
 		}.execute();
@@ -113,7 +116,11 @@ public class FileOperation{
 
 	void opSend(List<FileInfo> select) {
 	}
-	
+
+	void opDetail(FileInfo fi){
+		new InformationDialog(mContext, fi).show();
+	}
+
 	// 确认 进行 复制/剪切
 	void confirm(final String des){
 		if (mCopying) {
@@ -145,6 +152,7 @@ public class FileOperation{
 	void cancel(){
 		exitSelectMode();
 	}
+
 	boolean doBackKey(){
 		if(mMoving || mCopying){
 			exitSelectMode();
@@ -157,6 +165,7 @@ public class FileOperation{
 		mFileListAdapter.clearSelection();
 		LinearLayout bar = mFragment.getOperationBar();
 		bar.setVisibility(View.VISIBLE);
+		Utils.i("set bar visibile!");
 		View confirmBtn = bar.findViewById(R.id.button_confirm);
 		confirmBtn.setEnabled(false);
 		refreshFileList();

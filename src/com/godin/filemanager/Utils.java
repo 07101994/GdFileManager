@@ -91,6 +91,15 @@ public class Utils {
 		// fi.isEncrypt :TODO
 		return fi;
 	}
+	
+	public static FileInfo getUpFileInfo(String cur){
+		int index = cur.lastIndexOf(File.separatorChar);
+		FileInfo fi = new FileInfo();
+		fi.name = "..";
+		fi.path = cur.substring(0, index);
+		fi.isDir = true;
+		return fi;
+	}
 
 	public static String getNameForFilepath(String path) {
 		int index = path.lastIndexOf(File.separatorChar);
@@ -123,6 +132,7 @@ public class Utils {
 		TextView tv = (TextView)view.findViewById(id);
 		if(tv == null)
 			return false;
+		tv.setVisibility(View.VISIBLE);
 		tv.setText(text);
 		return true;
 	}
