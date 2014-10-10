@@ -115,9 +115,14 @@ public class FileOperation{
 	}
 
 	void opSend(List<FileInfo> select) {
+		
 	}
 
-	void opDetail(FileInfo fi){
+	void opRename(FileInfo fi) {
+		new TextInputDialog(mContext, fi).show();
+	}
+	
+	void opDetail(FileInfo fi) {
 		new InformationDialog(mContext, fi).show();
 	}
 
@@ -127,7 +132,6 @@ public class FileOperation{
 			asyncExec(new Runnable() {
 				@Override
 				public void run() {
-					Utils.i("opDelete() " + mCurList.size());
 					for (FileInfo fi : mCurList) {
 						Utils.CopyFile(fi, des);
 					}
@@ -137,7 +141,6 @@ public class FileOperation{
 			asyncExec(new Runnable() {
 				@Override
 				public void run() {
-					Utils.i("opDelete() " + mCurList.size());
 					for (FileInfo fi : mCurList) {
 						Utils.MoveFile(fi, des);
 					}
@@ -160,6 +163,11 @@ public class FileOperation{
 		}
 		return false;
 	}
+
+	void refreshFileList(){
+		mFragment.refreshList();
+	}
+	
 	private void enterSelectMode(List<FileInfo> select, boolean copy, boolean move){
 		copyList(select, copy,move);
 		mFileListAdapter.clearSelection();
@@ -184,9 +192,6 @@ public class FileOperation{
 			Toast.makeText(mContext, "FileOperation -- cancel what?", Toast.LENGTH_SHORT).show();
 	}
 	
-	private void refreshFileList(){
-		mFragment.refreshList();
-	}
 	private void updateConfirmButton(){
 		View bar = mFragment.getOperationBar();
 		if(bar.getVisibility() == View.GONE)

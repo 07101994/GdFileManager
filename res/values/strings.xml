@@ -17,6 +17,7 @@
     <string name="op_send">发送</string>
     <string name="op_select_all">全选</string>
     <string name="op_cancel">取消</string>
+    <string name="op_rename">重命名</string>
     <string name="op_detail">详情</string>
     <string name="multi_select_title">已选中 %1$s 个项目</string>
     
@@ -37,6 +38,7 @@
     <string name="yes">是</string>
     <string name="no">否</string>
     
+    <string name="rename_msg">请输入新名称</string>
     <!-- 提示语 -->
     <string name="delete_notice">确认删除选中的文件?</string>
     <string name="deleting">正在删除..</string>

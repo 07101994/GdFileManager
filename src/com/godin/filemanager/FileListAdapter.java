@@ -160,6 +160,9 @@ public class FileListAdapter extends ArrayAdapter<FileInfo> {
 			}
 			mCallback.onListChanged();
 			break;
+		case R.id.op_rename:
+			FileOperation.getInstance().opRename(mSelectedItem.get(0));
+			break;
 		case R.id.op_detail:
 			FileOperation.getInstance().opDetail(mSelectedItem.get(0));
 			break;
@@ -168,6 +171,8 @@ public class FileListAdapter extends ArrayAdapter<FileInfo> {
 		default:
 			throw new RuntimeException("unknown menu item , " + id );
 		}
+		if (index != -1)
+			mSelectedItem.clear();
 		return true;
 	}
 	
@@ -188,6 +193,7 @@ public class FileListAdapter extends ArrayAdapter<FileInfo> {
 			mmMenu.findItem(R.id.op_cancel).setVisible(count > 0);
 			mmMenu.findItem(R.id.op_select_all).setVisible(count != getCount());
 			mmMenu.findItem(R.id.op_detail).setVisible(count == 1);
+			mmMenu.findItem(R.id.op_rename).setVisible(count == 1);
 			return true;
 		}
 		@Override

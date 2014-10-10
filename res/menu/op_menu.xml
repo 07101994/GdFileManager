@@ -24,6 +24,9 @@
         android:icon="@drawable/ic_menu_cancel"
         android:title="@string/op_cancel"
         android:showAsAction="ifRoom"/>
+    <item android:id="@+id/op_rename"
+        android:title="@string/op_rename"
+        android:showAsAction="never"/>
     <item android:id="@+id/op_detail"
         android:title="@string/op_detail"
         android:showAsAction="never"/>

@@ -107,6 +107,12 @@ public class Utils {
 			return path.substring(index + 1);
 		return "/";
 	}
+	public static String getPathForFilepath(String path){
+		int index = path.lastIndexOf(File.separatorChar);
+		if (index != -1)
+			return path.substring(0, index);
+		return "/";
+	}
 	public static String getExtFromFilename(String path){
 		int index = path.lastIndexOf(".");
 		if(index != -1)
@@ -287,6 +293,18 @@ public class Utils {
         }
         return null;
     }
+    
+	public static boolean Rename(FileInfo fi, String newName) {
+		File file = new File(fi.path);
+		String newPath = makePath(getPathForFilepath(fi.path), newName);
+		try {
+			return file.renameTo(new File(newPath));
+		} catch (SecurityException e) {
+			e("Rename() fail. " + e);
+		}
+		return false;
+	}
+
 	public static void i(String s){
 		Log.i("godinFM", ""+s);
 	}
