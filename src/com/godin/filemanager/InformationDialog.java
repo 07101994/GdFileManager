@@ -1,3 +1,4 @@
+
 package com.godin.filemanager;
 
 import java.io.File;
@@ -49,7 +50,8 @@ public class InformationDialog extends AlertDialog {
                 .setText(mFileInfo.isHidden ? R.string.yes : R.string.no);
 
         setView(mView);
-        setButton(BUTTON_NEGATIVE, mContext.getString(R.string.confirm), (DialogInterface.OnClickListener) null);
+        setButton(BUTTON_NEGATIVE, mContext.getString(R.string.confirm),
+                (DialogInterface.OnClickListener) null);
 
         super.onCreate(savedInstanceState);
     }
@@ -61,14 +63,14 @@ public class InformationDialog extends AlertDialog {
                 case ID_USER:
                     Bundle data = msg.getData();
                     long size = data.getLong("SIZE");
-                    ((TextView) mView.findViewById(R.id.information_size)).setText(formatFileSizeString(size));
+                    ((TextView) mView.findViewById(R.id.information_size))
+                            .setText(formatFileSizeString(size));
             }
         };
     };
 
-
     private void asyncGetSize() {
-    	new AsyncTask<Object, Object, Object>() {
+        new AsyncTask<Object, Object, Object>() {
             private long size;
 
             @Override

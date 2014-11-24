@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:baselineAligned="false" 
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:baselineAligned="false"
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:padding="5dp" >
@@ -18,7 +18,7 @@
             android:layout_height="40dp"
             android:layout_gravity="center"
             android:background="@drawable/image_icon_bg"
-            android:contentDescription="@string/app_name"
+            android:contentDescription="@null"
             android:scaleType="centerInside" />
 
         <ImageView
@@ -26,7 +26,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_gravity="center"
-            android:contentDescription="@string/app_name"
+            android:contentDescription="@null"
             android:scaleType="centerInside" />
     </FrameLayout>
 
@@ -81,22 +81,23 @@
                 android:textAppearance="?android:attr/textAppearanceSmall" />
         </LinearLayout>
     </LinearLayout>
+
     <FrameLayout
         android:id="@+id/file_checkbox_area"
         android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-        android:layout_gravity="center"
+        android:layout_height="match_parent"
+        android:layout_gravity="right"
         android:gravity="center"
-        android:paddingLeft="10dp">
+        android:paddingLeft="10dp" >
 
         <ImageView
             android:id="@+id/file_checkbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:scaleType="fitCenter"
+            android:layout_gravity="center"
             android:gravity="center"
-            android:layout_gravity="center" />
-
+            android:contentDescription="@null"
+            android:scaleType="fitCenter" />
     </FrameLayout>
 
 </LinearLayout>

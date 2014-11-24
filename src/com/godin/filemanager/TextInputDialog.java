@@ -1,3 +1,4 @@
+
 package com.godin.filemanager;
 
 import android.app.AlertDialog;
@@ -39,8 +40,8 @@ public class TextInputDialog extends AlertDialog {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String newName = mFolderName.getText().toString();
-                        if(Utils.Rename(mFileInfo, newName))
-                        	FileOperation.getInstance().refreshFileList();
+                        if (Utils.Rename(mFileInfo, newName))
+                            FileOperation.getInstance().refreshFileList();
                     }
                 });
         setButton(BUTTON_NEGATIVE, mContext.getString(android.R.string.cancel),

@@ -1,3 +1,4 @@
+
 package com.godin.filemanager;
 
 import java.lang.ref.SoftReference;
@@ -29,14 +30,13 @@ public class FileIconLoader implements Callback {
     private static final String LOADER_THREAD_NAME = "FileIconLoader";
 
     /**
-     * Type of message sent by the UI thread to itself to indicate that some
-     * photos need to be loaded.
+     * Type of message sent by the UI thread to itself to indicate that some photos need to be
+     * loaded.
      */
     private static final int MESSAGE_REQUEST_LOADING = 1;
 
     /**
-     * Type of message sent by the loader thread to indicate that some photos
-     * have been loaded.
+     * Type of message sent by the loader thread to indicate that some photos have been loaded.
      */
     private static final int MESSAGE_ICON_LOADED = 2;
 
@@ -57,7 +57,7 @@ public class FileIconLoader implements Callback {
                 case Video:
                     return new BitmapHolder();
                 default:
-                    	return null;
+                    return null;
             }
         };
 
@@ -119,8 +119,8 @@ public class FileIconLoader implements Callback {
     private final static ConcurrentHashMap<String, ImageHolder> mImageCache = new ConcurrentHashMap<String, ImageHolder>();
 
     /**
-     * A map from ImageView to the corresponding photo ID. Please note that this
-     * photo ID may change before the photo loading request is started.
+     * A map from ImageView to the corresponding photo ID. Please note that this photo ID may change
+     * before the photo loading request is started.
      */
     private final ConcurrentHashMap<ImageView, FileId> mPendingRequests = new ConcurrentHashMap<ImageView, FileId>();
 
@@ -130,14 +130,12 @@ public class FileIconLoader implements Callback {
     private final Handler mMainThreadHandler = new Handler(this);
 
     /**
-     * Thread responsible for loading photos from the database. Created upon the
-     * first request.
+     * Thread responsible for loading photos from the database. Created upon the first request.
      */
     private LoaderThread mLoaderThread;
 
     /**
-     * A gate to make sure we only send one instance of MESSAGE_PHOTOS_NEEDED at
-     * a time.
+     * A gate to make sure we only send one instance of MESSAGE_PHOTOS_NEEDED at a time.
      */
     private boolean mLoadingRequested;
 
@@ -152,7 +150,7 @@ public class FileIconLoader implements Callback {
 
     /**
      * Constructor.
-     *
+     * 
      * @param context content context
      */
     public FileIconLoader(Context context, IconLoadFinishListener l) {
@@ -179,10 +177,9 @@ public class FileIconLoader implements Callback {
     }
 
     /**
-     * Load photo into the supplied image view. If the photo is already cached,
-     * it is displayed immediately. Otherwise a request is sent to load the
-     * photo from the database.
-     *
+     * Load photo into the supplied image view. If the photo is already cached, it is displayed
+     * immediately. Otherwise a request is sent to load the photo from the database.
+     * 
      * @param id, database id
      */
     public boolean loadIcon(ImageView view, String path, long id, FileCategory cate) {
@@ -205,13 +202,12 @@ public class FileIconLoader implements Callback {
     }
 
     /**
-     * Checks if the photo is present in cache. If so, sets the photo on the
-     * view, otherwise sets the state of the photo to
-     * {@link BitmapHolder#NEEDED}
+     * Checks if the photo is present in cache. If so, sets the photo on the view, otherwise sets
+     * the state of the photo to {@link BitmapHolder#NEEDED}
      */
     private boolean loadCachedIcon(ImageView view, String path, FileCategory cate) {
         ImageHolder holder = mImageCache.get(path);
-        
+
         if (holder == null) {
             holder = ImageHolder.create(cate);
             if (holder == null)
@@ -236,11 +232,12 @@ public class FileIconLoader implements Callback {
 
     public long getDbId(String path, boolean isVideo) {
         String volumeName = "external";
-        Uri uri = isVideo ? Video.Media.getContentUri(volumeName) : Images.Media.getContentUri(volumeName);
+        Uri uri = isVideo ? Video.Media.getContentUri(volumeName) : Images.Media
+                .getContentUri(volumeName);
         String selection = FileColumns.DATA + "=?";
         ;
         String[] selectionArgs = new String[] {
-            path
+                path
         };
 
         String[] columns = new String[] {
@@ -261,8 +258,7 @@ public class FileIconLoader implements Callback {
     }
 
     /**
-     * Stops loading images, kills the image loader thread and clears all
-     * caches.
+     * Stops loading images, kills the image loader thread and clears all caches.
      */
     public void stop() {
         pause();
@@ -298,10 +294,9 @@ public class FileIconLoader implements Callback {
     }
 
     /**
-     * Sends a message to this thread itself to start loading images. If the
-     * current view contains multiple image views, all of those image views will
-     * get a chance to request their respective photos before any of those
-     * requests are executed. This allows us to load images in bulk.
+     * Sends a message to this thread itself to start loading images. If the current view contains
+     * multiple image views, all of those image views will get a chance to request their respective
+     * photos before any of those requests are executed. This allows us to load images in bulk.
      */
     private void requestLoading() {
         if (!mLoadingRequested) {
@@ -339,9 +334,8 @@ public class FileIconLoader implements Callback {
     }
 
     /**
-     * Goes over pending loading requests and displays loaded photos. If some of
-     * the photos still haven't been loaded, sends another request for image
-     * loading.
+     * Goes over pending loading requests and displays loaded photos. If some of the photos still
+     * haven't been loaded, sends another request for image loading.
      */
     private void processLoadedIcons() {
         Iterator<ImageView> iterator = mPendingRequests.keySet().iterator();
@@ -381,8 +375,8 @@ public class FileIconLoader implements Callback {
         }
 
         /**
-         * Receives the above message, loads photos and then sends a message to
-         * the main thread to process them.
+         * Receives the above message, loads photos and then sends a message to the main thread to
+         * process them.
          */
         public boolean handleMessage(Message msg) {
             Iterator<FileId> iterator = mPendingRequests.values().iterator();
@@ -405,10 +399,11 @@ public class FileIconLoader implements Callback {
                             if (id.mId == 0) {
                                 Log.e("FileIconLoader", "Fail to get dababase id for:" + id.mPath);
                             }
-                            holder.setImage(isVideo ? getVideoThumbnail(id.mId) : getImageThumbnail(id.mId));
+                            holder.setImage(isVideo ? getVideoThumbnail(id.mId)
+                                    : getImageThumbnail(id.mId));
                             break;
                         default:
-                        	;
+                            ;
                     }
 
                     holder.state = BitmapHolder.LOADED;
@@ -423,11 +418,13 @@ public class FileIconLoader implements Callback {
         private static final int MICRO_KIND = 3;
 
         private Bitmap getImageThumbnail(long id) {
-            return Images.Thumbnails.getThumbnail(mContext.getContentResolver(), id, MICRO_KIND, null);
+            return Images.Thumbnails.getThumbnail(mContext.getContentResolver(), id, MICRO_KIND,
+                    null);
         }
 
         private Bitmap getVideoThumbnail(long id) {
-            return Video.Thumbnails.getThumbnail(mContext.getContentResolver(), id, MICRO_KIND, null);
+            return Video.Thumbnails.getThumbnail(mContext.getContentResolver(), id, MICRO_KIND,
+                    null);
         }
     }
 }

@@ -1,3 +1,4 @@
+
 package com.godin.filemanager;
 
 import java.io.File;
@@ -9,8 +10,8 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Utilities for dealing with MIME types.
- * Used to implement java.net.URLConnection and android.webkit.MimeTypeMap.
+ * Utilities for dealing with MIME types. Used to implement java.net.URLConnection and
+ * android.webkit.MimeTypeMap.
  */
 public final class MimeUtils {
     private static final Map<String, String> mimeTypeToExtensionMap = new HashMap<String, String>();
@@ -271,7 +272,7 @@ public final class MimeUtils {
         add("text/plain", "asc");
         add("text/plain", "text");
         add("text/plain", "diff");
-        add("text/plain", "po");     // reserve "pot" for vnd.ms-powerpoint
+        add("text/plain", "po"); // reserve "pot" for vnd.ms-powerpoint
         add("text/richtext", "rtx");
         add("text/rtf", "rtf");
         add("text/texmacs", "ts");
@@ -369,7 +370,8 @@ public final class MimeUtils {
         }
 
         // Standard location?
-        File f = new File(System.getProperty("java.home"), "lib" + File.separator + "content-types.properties");
+        File f = new File(System.getProperty("java.home"), "lib" + File.separator
+                + "content-types.properties");
         if (f.exists()) {
             try {
                 return new FileInputStream(f);
@@ -381,9 +383,9 @@ public final class MimeUtils {
     }
 
     /**
-     * This isn't what the RI does. The RI doesn't have hard-coded defaults, so supplying your
-     * own "content.types.user.table" means you don't get any of the built-ins, and the built-ins
-     * come from "$JAVA_HOME/lib/content-types.properties".
+     * This isn't what the RI does. The RI doesn't have hard-coded defaults, so supplying your own
+     * "content.types.user.table" means you don't get any of the built-ins, and the built-ins come
+     * from "$JAVA_HOME/lib/content-types.properties".
      */
     private static void applyOverrides() {
         // Get the appropriate InputStream to read overrides from, if any.
@@ -415,6 +417,7 @@ public final class MimeUtils {
 
     /**
      * Returns true if the given MIME type has an entry in the map.
+     * 
      * @param mimeType A MIME type (i.e. text/plain)
      * @return True iff there is a mimeType entry in the map.
      */
@@ -427,6 +430,7 @@ public final class MimeUtils {
 
     /**
      * Returns the MIME type for the given extension.
+     * 
      * @param extension A file extension without the leading '.'
      * @return The MIME type for the given extension or null iff there is none.
      */
@@ -439,6 +443,7 @@ public final class MimeUtils {
 
     /**
      * Returns true if the given extension has a registered MIME type.
+     * 
      * @param extension A file extension without the leading '.'
      * @return True iff there is an extension entry in the map.
      */
@@ -450,9 +455,9 @@ public final class MimeUtils {
     }
 
     /**
-     * Returns the registered extension for the given MIME type. Note that some
-     * MIME types map to multiple extensions. This call will return the most
-     * common extension for the given MIME type.
+     * Returns the registered extension for the given MIME type. Note that some MIME types map to
+     * multiple extensions. This call will return the most common extension for the given MIME type.
+     * 
      * @param mimeType A MIME type (i.e. text/plain)
      * @return The extension for the given MIME type or null iff there is none.
      */

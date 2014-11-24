@@ -108,5 +108,5 @@ public class FileIconHelper implements IconLoadFinishListener{
             imageFrames.remove(view);
         }
     }
-	
+
 }
