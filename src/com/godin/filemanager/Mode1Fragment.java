@@ -15,8 +15,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,7 +31,7 @@ import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class Mode1Fragment extends Fragment implements IFragmentCallback, View.OnClickListener {
+public class Mode1Fragment extends Fragment implements IFragmentCallback, OnItemClickListener {
 
     static String KEY_PATH = "current_path";
     MainActivity mActivity;
@@ -111,11 +114,12 @@ public class Mode1Fragment extends Fragment implements IFragmentCallback, View.O
     }
 
     @Override
-    public void onClick(View view) {
+    public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
         final FileInfo fi = (FileInfo) view.getTag();// , fi2 = mFileNameList.get(pos);
         // Utils.i("onItemClick  tag == get(position) ? " + (fi == fi2));//always true
         if (mAdapter.isInSelection()) {
-            mAdapter.switchCheckbox(view);
+            CheckBox cb = (CheckBox) view.findViewById(R.id.file_checkbox_area);
+            cb.setChecked(!cb.isChecked());
             return;
         }
 

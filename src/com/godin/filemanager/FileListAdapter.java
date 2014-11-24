@@ -10,6 +10,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -24,42 +27,53 @@ public class FileListAdapter extends RecyclerView.Adapter<FileListAdapter.FLView
     private final Context mContext;
     private final IFragmentCallback mCallback;
     private final List<FileInfo> mAllItems;
-    private final View.OnClickListener mClickListener;
     private final ArrayList<FileInfo> mSelectedItem = new ArrayList<FileInfo>();
+    private final OnItemClickListener mOnItemClick;
 
     static class FLViewHold extends RecyclerView.ViewHolder {
-        FLViewHold(View view, View.OnClickListener lis) {
+        FLViewHold(View view, final MyCheckListener cl, final OnItemClickListener oicl) {
             super(view);
             image = (ImageView) view.findViewById(R.id.file_image);
             image_frame = (ImageView) view.findViewById(R.id.file_image_frame);
-            checkbox_area = view.findViewById(R.id.file_checkbox_area);
+            checkbox_area = (CheckBox) view.findViewById(R.id.file_checkbox_area);
             filename = (TextView) view.findViewById(R.id.file_name);
             fileSize = (TextView) view.findViewById(R.id.file_size);
             modifyTime = (TextView) view.findViewById(R.id.modified_time);
             fileCount = (TextView) view.findViewById(R.id.file_count);
-            checkbox = (ImageView) view.findViewById(R.id.file_checkbox);
-            view.setOnClickListener(lis);
+            checkbox_area.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    cl.onCheckedChanged(buttonView, isChecked, getPosition());
+                }
+            });
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    oicl.onItemClick(null, v, getPosition(), 0);
+                }
+            });
         }
 
-        final ImageView image, image_frame, checkbox;
-        final View checkbox_area;
+        final ImageView image, image_frame;
+        final CheckBox checkbox_area;
         final TextView filename, modifyTime, fileCount, fileSize;
     }
 
     public FileListAdapter(Context c, int resId, List<FileInfo> fileinfos,
-            FileIconHelper iconHelper, IFragmentCallback callback, View.OnClickListener lis) {
+            FileIconHelper iconHelper, IFragmentCallback callback, OnItemClickListener lis) {
         mFileIconHelper = iconHelper;
         mContext = c;
         mCallback = callback;
         mAllItems = fileinfos;
-        mClickListener = lis;
+        mOnItemClick = lis;
     }
 
     @Override
     public FLViewHold onCreateViewHolder(ViewGroup parent,
             int viewType) {
         View root = View.inflate(mContext, R.layout.file_browser_item, null);
-        FLViewHold vh = new FLViewHold(root, mClickListener);
+        FLViewHold vh = new FLViewHold(root, checkedListener, mOnItemClick);
         return vh;
     }
 
@@ -74,7 +88,6 @@ public class FileListAdapter extends RecyclerView.Adapter<FileListAdapter.FLView
             holder.modifyTime.setVisibility(View.GONE);
             holder.image_frame.setVisibility(View.GONE);
             holder.image.setImageResource(R.drawable.folder);
-            // return view;
         } else {
             holder.fileCount.setVisibility(View.VISIBLE);
             holder.checkbox_area.setVisibility(View.VISIBLE);
@@ -91,10 +104,7 @@ public class FileListAdapter extends RecyclerView.Adapter<FileListAdapter.FLView
                 holder.fileCount.setText("");
                 mFileIconHelper.setIcon(fi, holder.image, holder.image_frame);
             }
-            holder.checkbox.setImageResource(fi.selected ? R.drawable.btn_check_on_holo_light
-                    : R.drawable.btn_check_off_holo_light);
-            holder.checkbox.setTag((Integer) position);
-            holder.checkbox_area.setOnClickListener(mCheckboxOnClick);
+            holder.checkbox_area.setChecked(fi.selected);
         }
     }
 
@@ -118,19 +128,23 @@ public class FileListAdapter extends RecyclerView.Adapter<FileListAdapter.FLView
         return mSelectedItem.size() > 0;
     }
 
-    private View.OnClickListener mCheckboxOnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            switchCheckbox(v);
-        }
-    };
+    private MyCheckListener checkedListener = new MyCheckListener();
 
-    void switchCheckbox(View v) {
-        ImageView img = (ImageView) v.findViewById(R.id.file_checkbox);
-        FileInfo tag = mAllItems.get((int) img.getTag());
-        tag.selected = !tag.selected;
+    final class MyCheckListener {
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked, int pos) {
+            switchCheckbox(buttonView, pos);
+        }
+    }
+
+    void switchCheckbox(View v, int pos) {
+        final CheckBox cb = (CheckBox) v;
+        FileInfo tag = mAllItems.get(pos);
+        tag.selected = cb.isChecked();
         if (tag.selected)
-            mSelectedItem.add(tag);
+            if (mSelectedItem.contains(tag))
+                return;
+            else
+                mSelectedItem.add(tag);
         else
             mSelectedItem.remove(tag);
         ActionMode am = ((MainActivity) mContext).getActionMode();
@@ -141,8 +155,6 @@ public class FileListAdapter extends RecyclerView.Adapter<FileListAdapter.FLView
         am.invalidate();
         updateActionModeTitle(am);
 
-        img.setImageResource(tag.selected ? R.drawable.btn_check_on_holo_light
-                : R.drawable.btn_check_off_holo_light);
         Utils.i((tag.selected ? "selected : " : "cancel selected : ") + tag.name);
     }
 
